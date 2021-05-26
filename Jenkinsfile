@@ -37,7 +37,7 @@ pipeline {
       		agent {label 'docker'}
       		steps { echo "${env.NODE_NAME}"  }
 		echo " -------===== Runing  building images ====-------- "
-            	sh "docker run --name andy-tst --rm -d -p 82:80 project-build:${DOCKER_IMAGE_BRANCH}"
+//            	sh "docker run --name andy-tst --rm -d -p 81:80 project-build:${DOCKER_IMAGE_BRANCH}"
 	    }
 	}
 	stage("Stoping docker image") {
@@ -45,8 +45,8 @@ pipeline {
       		agent {label 'docker'}
       		steps { echo "${env.NODE_NAME}"  }
 		echo " -------===== Stop  building images ====-------- "
-            	sh "docker stop andy-tst"
-		sh "docker tag project-build:last project-build:old"
+//            	sh "docker stop andy-tst"
+//		sh "docker tag project-build:last project-build:old"
 		sh "docker tag project-build:${DOCKER_IMAGE_BRANCH} project-build:last"
 	    }
 	}
@@ -55,9 +55,9 @@ pipeline {
       		agent {label 'docker'}
       		steps { echo "${env.NODE_NAME}"  }
 		echo " -------===== delete  building images ====-------- "
-            	sh "docker stop andy-www"
-            	sh "docker rmi project-build:old"
-            	sh "docker run --name andy-www --rm -d -p 81:80 project-build:last"
+//            	sh "docker stop andy-www"
+//            	sh "docker rmi project-build:old"
+            	sh "docker run --name andy-www --rm -d -p 80:80 project-build:last"
 	    }
 	}
     }
