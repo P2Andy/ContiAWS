@@ -21,24 +21,29 @@ pipeline {
         )
         disableConcurrentBuilds()
     }
-    triggers { pollSCM('* * * * *') }
+//    triggers { pollSCM('* * * * *') }
     agent { label 'docker' }
-
     stages {
 	stage("Create docker image") {
 	    steps {
+      		agent {label 'docker'}
+      		steps { echo "${env.NODE_NAME}"  }
 		echo " -------===== Start building images ====-------- "
             	sh "docker build . -t project-build:${DOCKER_IMAGE_BRANCH}"
 	    }
 	}
 	stage("Runing docker image") {
 	    steps {
+      		agent {label 'docker'}
+      		steps { echo "${env.NODE_NAME}"  }
 		echo " -------===== Runing  building images ====-------- "
             	sh "docker run --name andy-tst --rm -d -p 82:80 project-build:${DOCKER_IMAGE_BRANCH}"
 	    }
 	}
 	stage("Stoping docker image") {
 	    steps {
+      		agent {label 'docker'}
+      		steps { echo "${env.NODE_NAME}"  }
 		echo " -------===== Stop  building images ====-------- "
             	sh "docker stop andy-tst"
 		sh "docker tag project-build:last project-build:old"
@@ -47,6 +52,8 @@ pipeline {
 	}
 	stage("Delete docker image") {
 	    steps {
+      		agent {label 'docker'}
+      		steps { echo "${env.NODE_NAME}"  }
 		echo " -------===== delete  building images ====-------- "
             	sh "docker stop andy-www"
             	sh "docker rmi project-build:old"
