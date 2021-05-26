@@ -22,7 +22,7 @@ pipeline {
         disableConcurrentBuilds()
     }
     triggers { pollSCM('* * * * *') }
-    agent any
+    agent { label 'docker' }
 
     stages {
 	stage("Create docker image") {
