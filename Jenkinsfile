@@ -1,5 +1,10 @@
 pipeline {
   agent none
+  environment {
+      REPO_USR = 'p2andy'
+      IMG_NAME = 'conti-aws'
+      REPO_IMG = "${REPO_USR}/${IMG_NAME}"
+  }
     stages {
         stage('Create docker image') {
             agent { label 'docker' }
@@ -7,14 +12,14 @@ pipeline {
                 echo "${env.NODE_NAME}"
                 sh 'echo "<br>Build by Jenkins: $BUILD_ID<br>" >> index.html'
                 sh 'date >> index.html'
-                sh ' docker build . -t conti-aws:$BUILD_ID'
+                sh ' docker build . -t $IMG_NAME:$BUILD_ID'
             }
         }
         stage('Runing new container') {
             agent { label 'docker' }
             steps {
                 echo "${env.NODE_NAME}"
-                sh 'docker run --name andy-tst --rm -d -p 81:80 conti-aws:$BUILD_ID'
+                sh 'docker run --name andy-tst --rm -d -p 81:80 $IMG_NAME:$BUILD_ID'
             }
         }
         stage('Example Test') {
@@ -22,18 +27,18 @@ pipeline {
             steps {
                 echo "${env.NODE_NAME}"
                 sh 'docker stop andy-tst'
-                sh "docker tag p2andy/conti-aws:latest conti-aws:old"
-                sh "docker tag conti-aws:$BUILD_ID p2andy/conti-aws:latest"
+                sh "docker tag $REPO_IMG:latest $IMG_NAME:old"
+                sh "docker tag $IMG_NAME:$BUILD_ID $REPO_IMG:latest"
             }
         }
         stage('Rotate images') {
             agent { label 'docker' }
             steps {
                 echo "${env.NODE_NAME}"
-                sh "docker push p2andy/conti-aws:latest"
+                sh "docker push $REPO_IMG:latest"
                 sh 'docker stop andy-www'
-                sh "docker run --name andy-www --rm -d -p 80:80 p2andy\conti-aws:latest"
-                sh 'docker rmi conti-aws:old conti-aws:$BUILD_ID'
+                sh "docker run --name andy-www --rm -d -p 80:80 $REPO_IMG:latest"
+                sh 'docker rmi $IMG_NAME:old $IMG_NAME:$BUILD_ID'
             }
         }
     }
