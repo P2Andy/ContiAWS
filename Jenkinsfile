@@ -22,17 +22,17 @@ pipeline {
             steps {
                 echo "${env.NODE_NAME}"
                 sh 'docker stop andy-tst'
-                sh 'docker tag p2andy/conti-aws:latest conti-aws:old'
-                sh 'docker tag conti-aws:$BUILD_ID p2andy/conti-aws:latest'
+                sh "docker tag p2andy/conti-aws:latest conti-aws:old"
+                sh "docker tag conti-aws:$BUILD_ID p2andy/conti-aws:latest"
             }
         }
         stage('Rotate images') {
             agent { label 'docker' }
             steps {
                 echo "${env.NODE_NAME}"
-                sh 'docker push p2andy/conti-aws:latest'
+                sh "docker push p2andy/conti-aws:latest"
                 sh 'docker stop andy-www'
-                sh 'docker run --name andy-www --rm -d -p 80:80 p2andy\conti-aws:latest'
+                sh "docker run --name andy-www --rm -d -p 80:80 p2andy\conti-aws:latest"
                 sh 'docker rmi conti-aws:old conti-aws:$BUILD_ID'
             }
         }
