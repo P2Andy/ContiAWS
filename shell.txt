@@ -1,20 +1,11 @@
-echo "${env.NODE_NAME}"  }
-echo " -------===== Start building images ====-------- "
-echo "docker build . -t project-build:${DOCKER_IMAGE_BRANCH}"
+docker build . -t project-build:123
+docker run --name andy-tst --rm -d -p 81:80 project-build:123
+[ `curl http://localhost:81/ -w %{http_code} -so /dev/null` -eq 200 ] && echo "Test OK!" || echo "Test Filed!"
+docker stop andy-tst
+docker tag project-build:latest project-build:old
+docker tag project-build:123 project-build:latest
 
-echo "${env.NODE_NAME}
-echo " -------===== Runing  building images ====-------- "
-echo "docker run --name andy-tst --rm -d -p 81:80 project-build:${DOCKER_IMAGE_BRANCH}"
-
-echo "${env.NODE_NAME}
-echo " -------===== Stop  building images ====-------- "
-echo "docker stop andy-tst"
-echo" docker tag project-build:last project-build:old"
-echo "docker tag project-build:${DOCKER_IMAGE_BRANCH} project-build:last"
-
-echo "${env.NODE_NAME}
-echo " -------===== delete  building images ====-------- "
-echo "docker stop andy-www"
-echo "docker rmi project-build:old"
-echo "docker run --name andy-www --rm -d -p 80:80 project-build:last"
+docker stop andy-www
+docker rmi project-build:old
+docker run --name andy-www --rm -d -p 80:80 project-build:latest
 
